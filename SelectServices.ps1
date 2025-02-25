@@ -3,7 +3,7 @@ param(
 )
 
 # Predefined services
-$services = @("Adminer", "Apache", "MariaDB", "PHP", "MongoDB", "MySQL", "Nginx", "Node", "MariaDB", "Redis")
+$services = @("Adminer", "Apache", "MariaDB", "PHP", "MongoDB", "MySQL", "Nginx", "Node", "Redis")
 
 # Display service options to user
 Write-Host "Available services (select by entering numbers separated by commas):"

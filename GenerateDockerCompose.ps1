@@ -12,6 +12,7 @@ services:
 
 if ($selectedServicesArray -contains "PHP") {
         $dockerComposeContent += @"
+  
   php:
 "@
 
@@ -31,6 +32,7 @@ $dockerComposeContent += @"
     container_name: php_container
     volumes:
       - ./${sourceDir}:/var/www/html
+      - ./logs:/var/www/logs
     environment:
       - PHP_EXTENSIONS=$phpServices"
 "@
@@ -109,6 +111,9 @@ if ($selectedServicesArray -contains "MongoDB") {
     image: mongo:latest
     container_name: mongo_container
     restart: always
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=`$MONGO_USER
+      - MONGODB_INITDB_ROOT_PASSWORD=`$MONGO_PASSWORD
     ports:
       - 27017:27017
     volumes:
@@ -124,10 +129,10 @@ if ($selectedServicesArray -contains "MySQL") {
     container_name: mysql_container
     # restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD: 'root'
-      - MYSQL_DATABASE: $MYSQL_DB
-      - MYSQL_USER: $MYSQL_USER
-      - MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: `$MYSQL_DB
+      MYSQL_USER: `$MYSQL_USER
+      MYSQL_PASSWORD: `$MYSQL_PASSWORD
     depends_on:
       - php
     command: --default-authentication-plugin=mysql_native_password --skip-ssl --sha256-password-auto-generate-rsa-keys=OFF --caching-sha2-password-auto-generate-rsa-keys=OFF
@@ -142,10 +147,10 @@ if ($selectedServicesArray -contains "MariaDB") {
     container_name: mariadb_container
     # restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD: 'root'
-      - MYSQL_DATABASE: $MYSQL_DB
-      - MYSQL_USER: $MYSQL_USER
-      - MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: `$MYSQL_DB
+      MYSQL_USER: `$MYSQL_USER
+      MYSQL_PASSWORD: `$MYSQL_PASSWORD
     depends_on:
       - php
     command: --default-authentication-plugin=mysql_native_password --skip-ssl --sha256-password-auto-generate-rsa-keys=OFF --caching-sha2-password-auto-generate-rsa-keys=OFF
@@ -162,10 +167,20 @@ if ($selectedServicesArray -contains "Adminer") {
     ports:
       - 8081:8080
     depends_on:
+"@
+    if ($selectedServicesArray -contains "Mysql") {
+        $dockerComposeContent += @"
+
       - mysql
-      - mariadb"
 "@
     }
+    if ($selectedServicesArray -contains "MariaDB") {
+        $dockerComposeContent += @"
+
+      - mariadb
+"@
+    }
+}
 
 if ($selectedServicesArray -contains "Node") {
     $dockerComposeContent += @"
@@ -190,10 +205,14 @@ if ($selectedServicesArray -contains "Redis") {
     image: redis:latest
     container_name: redis_container
     # restart: always
+    environment:
+      - REDIS_PASSWORD=`$REDIS_PASSWORD
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
     ports:
       - 6379:6379
     volumes:
-      - redis_data:/redis"
+      - redis_data:/redis
 "@
     }
 
@@ -203,13 +222,15 @@ $dockerComposeContent += @"
 volumes:
 "@
 if ($selectedServicesArray -contains "MongoDB") {
-    $dockerComposeContent += "  mongo_data:\n"
+    $dockerComposeContent += "  
+  mongo_data:
+"
 }
 if ($selectedServicesArray -contains "Redis") {
-    $dockerComposeContent += "  redis_data:\n"
+    $dockerComposeContent += "
+  redis_data:
+"
 }
 
-Write-host $dockerComposeContent
-
-# $dockerComposeContent | Out-File -Encoding utf8 -FilePath $dockerComposePath
+$dockerComposeContent | Out-File -Encoding utf8 -FilePath $dockerComposePath
 Write-Host "docker-compose.yml file generated successfully." -ForegroundColor Green

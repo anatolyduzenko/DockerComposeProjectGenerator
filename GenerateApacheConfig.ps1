@@ -10,6 +10,12 @@ if (!(Test-Path -PathType Container $apacheConfigPath)) {
     New-Item -ItemType Directory -Path $apacheConfigPath
 }
 
+$apacheLogsPath = "$projectPath\logs"
+
+if (!(Test-Path -PathType Container $apacheLogsPath)) {
+    New-Item -ItemType Directory -Path $apacheLogsPath
+}
+
 # Prompt user for project type
 Write-Host "Select project type:"
 Write-Host "1. WordPress"
