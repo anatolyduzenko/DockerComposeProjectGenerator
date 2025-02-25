@@ -20,25 +20,26 @@ This setup script generates a `docker-compose.yml` file for configuring containe
 
 ## Installation & Usage
 ### Step 1: Run the Setup Script
-Execute the PowerShell script to generate the database configuration:
+Execute the PowerShell script to generate the project configuration:
 ```powershell
 .\GenerateProject.ps1
 ```
 
-### Step 2: Start Database Containers
-Run the following command to start the database containers:
+### Step 2: Start Containers
+Run the following command to start the containers:
 ```sh
 docker-compose -f docker-compose.yml up -d
 ```
 
 ### Step 3: Verify Running Containers
-Check if the database containers are running using:
+Check if containers are running using:
 ```sh
 docker ps
 ```
 
 ## Configuration
-You will be prompted for additional information.
+You will be prompted for additional information during setup. 
+DB credentials will be stored in .env file in the project root folder.
 
 ## Troubleshooting
 - If a container fails to start, check logs using:
