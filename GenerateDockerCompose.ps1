@@ -29,12 +29,11 @@ if ($phpUseBuild -eq "yes") {
 }
 $dockerComposeContent += @"
 
-    container_name: php_container
+    # container_name: php_container
     volumes:
       - ./${sourceDir}:/var/www/html
       - ./logs:/var/www/logs
-    environment:
-      - PHP_EXTENSIONS=$phpServices"
+    
 "@
 }
 
@@ -43,7 +42,7 @@ if ($selectedServicesArray -contains "Apache") {
 
   apache:
     image: httpd:latest
-    container_name: apache_container
+    # container_name: apache_container
     # restart: always
     ports:
       - 80:80
@@ -58,7 +57,7 @@ if ($selectedServicesArray -contains "Nginx") {
 
   nginx:
     build: ./docker/nginx
-    container_name: nginx_container
+    # container_name: nginx_container
     # restart: always
     ports:
       - 80:80
@@ -109,7 +108,7 @@ if ($selectedServicesArray -contains "MongoDB") {
 
   mongo:
     image: mongo:latest
-    container_name: mongo_container
+    # container_name: mongo_container
     restart: always
     environment:
       - MONGODB_INITDB_ROOT_USERNAME=`$MONGO_USER
@@ -126,8 +125,10 @@ if ($selectedServicesArray -contains "MySQL") {
 
   mysql:
     image: mysql:latest
-    container_name: mysql_container
+    # container_name: mysql_container
     # restart: always
+    volumes:
+        - ./mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_DATABASE: `$MYSQL_DB
@@ -144,8 +145,10 @@ if ($selectedServicesArray -contains "MariaDB") {
 
   mariadb:
     image: mariadb:latest
-    container_name: mariadb_container
+    # container_name: mariadb_container
     # restart: always
+    volumes:
+        - ./mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_DATABASE: `$MYSQL_DB
@@ -153,7 +156,7 @@ if ($selectedServicesArray -contains "MariaDB") {
       MYSQL_PASSWORD: `$MYSQL_PASSWORD
     depends_on:
       - php
-    command: --default-authentication-plugin=mysql_native_password --skip-ssl --sha256-password-auto-generate-rsa-keys=OFF --caching-sha2-password-auto-generate-rsa-keys=OFF
+    # command: --default-authentication-plugin=mysql_native_password --skip-ssl --sha256-password-auto-generate-rsa-keys=OFF --caching-sha2-password-auto-generate-rsa-keys=OFF
 "@
     }
 
@@ -162,7 +165,7 @@ if ($selectedServicesArray -contains "Adminer") {
 
   adminer:
     image: adminer
-    container_name: adminer_container
+    # container_name: adminer_container
     # restart: always
     ports:
       - 8081:8080
@@ -187,7 +190,7 @@ if ($selectedServicesArray -contains "Node") {
 
   node:
     image: node:latest
-    container_name: node_container
+    # container_name: node_container
     # restart: always
     working_dir: /app
     ports:
@@ -203,7 +206,7 @@ if ($selectedServicesArray -contains "Redis") {
 
   redis:
     image: redis:latest
-    container_name: redis_container
+    # container_name: redis_container
     # restart: always
     environment:
       - REDIS_PASSWORD=`$REDIS_PASSWORD
